@@ -71,7 +71,7 @@ export default function TransactionList() {
 
         // Header
         doc.setFontSize(20);
-        doc.text("Finance Report", 14, 20);
+        doc.text("MC Group Finance Report", 14, 20);
         doc.setFontSize(10);
         doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 14, 28);
 
@@ -100,10 +100,10 @@ export default function TransactionList() {
         // Summary
         const finalY = (doc as any).lastAutoTable.finalY + 15;
         doc.setFontSize(12);
-        doc.text(`Total Income: $${totalIncome.toFixed(2)}`, 14, finalY);
-        doc.text(`Total Expense: $${totalExpense.toFixed(2)}`, 14, finalY + 7);
+        doc.text(`Total Income: ₹${totalIncome.toFixed(2)}`, 14, finalY);
+        doc.text(`Total Expense: ₹${totalExpense.toFixed(2)}`, 14, finalY + 7);
         doc.setFont("helvetica", "bold");
-        doc.text(`Net Profit: $${profit.toFixed(2)}`, 14, finalY + 14);
+        doc.text(`Net Profit: ₹${profit.toFixed(2)}`, 14, finalY + 14);
 
         doc.save("finance-report.pdf");
     };
@@ -123,16 +123,16 @@ export default function TransactionList() {
             <div className="grid-3" style={{ marginBottom: '2rem' }}>
                 <div className="card text-center" style={{ marginBottom: 0 }}>
                     <div className="text-sm">Income</div>
-                    <div className="amount-income" style={{ fontSize: '1.5rem' }}>+${totalIncome.toFixed(2)}</div>
+                    <div className="amount-income" style={{ fontSize: '1.5rem' }}>+₹{totalIncome.toFixed(2)}</div>
                 </div>
                 <div className="card text-center" style={{ marginBottom: 0 }}>
                     <div className="text-sm">Expense</div>
-                    <div className="amount-expense" style={{ fontSize: '1.5rem' }}>-${totalExpense.toFixed(2)}</div>
+                    <div className="amount-expense" style={{ fontSize: '1.5rem' }}>-₹{totalExpense.toFixed(2)}</div>
                 </div>
                 <div className="card text-center" style={{ marginBottom: 0 }}>
                     <div className="text-sm">Net Profit</div>
                     <div style={{ fontSize: '1.5rem', fontWeight: 700, color: profit >= 0 ? 'HSL(var(--primary))' : 'HSL(var(--destructive))' }}>
-                        {profit >= 0 ? '+' : ''}${profit.toFixed(2)}
+                        {profit >= 0 ? '+' : ''}₹{profit.toFixed(2)}
                     </div>
                 </div>
             </div>
@@ -180,7 +180,7 @@ export default function TransactionList() {
                                         </div>
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                                             <span className={t.type === 'income' ? 'amount-income' : 'amount-expense'}>
-                                                {t.type === 'income' ? '+' : '-'}${t.amount.toFixed(2)}
+                                                {t.type === 'income' ? '+' : '-'}₹{t.amount.toFixed(2)}
                                             </span>
                                             <div style={{ display: 'flex' }}>
                                                 <button onClick={() => startEdit(t)} className="icon-btn"><Edit2 size={16} /></button>

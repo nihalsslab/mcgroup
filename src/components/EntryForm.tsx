@@ -55,7 +55,7 @@ export default function EntryForm({ onAdd }: { onAdd: () => void }) {
                     <label>Amount</label>
                     <input
                         type="number"
-                        placeholder="0.00"
+                        placeholder="₹ 0.00"
                         value={amount}
                         onChange={(e) => setAmount(e.target.value)}
                         required
