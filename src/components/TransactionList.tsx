@@ -3,7 +3,9 @@
 import { useEffect, useState } from 'react';
 import { collection, query, orderBy, onSnapshot, deleteDoc, doc, updateDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-import { Trash2, Edit2, Check, X, ArrowUpCircle, ArrowDownCircle } from 'lucide-react';
+import { Trash2, Edit2, Check, X, ArrowUpCircle, ArrowDownCircle, Download } from 'lucide-react';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 interface Transaction {
     id: string;
@@ -63,6 +65,49 @@ export default function TransactionList() {
         }
     };
 
+    /* PDF GENERATION LOGIC */
+    const downloadPDF = () => {
+        const doc = new jsPDF();
+
+        // Header
+        doc.setFontSize(20);
+        doc.text("Finance Report", 14, 20);
+        doc.setFontSize(10);
+        doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 14, 28);
+
+        // Table Data
+        const tableData = transactions.map(t => {
+            const dateStr = t.createdAt?.seconds
+                ? new Date(t.createdAt.seconds * 1000).toLocaleDateString()
+                : 'Pending';
+            return [
+                dateStr,
+                t.caption,
+                t.type.toUpperCase(),
+                (t.type === 'income' ? '+' : '-') + t.amount.toFixed(2)
+            ];
+        });
+
+        // Generate Table
+        autoTable(doc, {
+            startY: 35,
+            head: [['Date', 'Description', 'Type', 'Amount']],
+            body: tableData,
+            theme: 'grid',
+            headStyles: { fillColor: [41, 128, 185] }, // Blue header
+        });
+
+        // Summary
+        const finalY = (doc as any).lastAutoTable.finalY + 15;
+        doc.setFontSize(12);
+        doc.text(`Total Income: $${totalIncome.toFixed(2)}`, 14, finalY);
+        doc.text(`Total Expense: $${totalExpense.toFixed(2)}`, 14, finalY + 7);
+        doc.setFont("helvetica", "bold");
+        doc.text(`Net Profit: $${profit.toFixed(2)}`, 14, finalY + 14);
+
+        doc.save("finance-report.pdf");
+    };
+
     const totalIncome = transactions
         .filter(t => t.type === 'income')
         .reduce((sum, t) => sum + t.amount, 0);
@@ -93,7 +138,12 @@ export default function TransactionList() {
             </div>
 
             <div className="card">
-                <h2 className="title" style={{ fontSize: '1.5rem', textAlign: 'left', marginBottom: '1.5rem' }}>History</h2>
+                <div className="flex-between" style={{ marginBottom: '1.5rem' }}>
+                    <h2 className="title" style={{ fontSize: '1.5rem', textAlign: 'left', marginBottom: 0 }}>History</h2>
+                    <button onClick={downloadPDF} className="btn btn-secondary" style={{ gap: '0.5rem' }}>
+                        <Download size={16} /> Download
+                    </button>
+                </div>
 
                 {transactions.length === 0 ? (
                     <p className="text-center transaction-list text-sm" style={{ padding: '2rem 0' }}>No transactions yet.</p>
